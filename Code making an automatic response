@@ -1,0 +1,32 @@
+const replyMSG = [];
+const saveReplay = [];
+client.on("message", message => {
+if (!replyMSG[message.author.id])
+replyMSG[message.author.id] = {contentmessage: "none",replayMessage: "none"};
+if (message.content.startsWith(prefix + "reply")) {
+if (message.author.bot || message.channel.type == "dm") return undefined;
+let contmessage;
+let filter = m => m.author.id === message.author.id;
+message.channel.send("Pleasy Type The Msg").then(msg => {
+message.channel
+.awaitMessages(filter, {maxMatches: 1,time: 12000,errors: ["time"]}).then(collected => {
+contmessage = collected.first().content;
+msg.edit("Please Type The Reply");
+message.channel
+.awaitMessages(filter, {maxMatches: 1,time: 12000,errors: ["time"]})
+.then(collectedd => {replyMSG[message.author.id] = {contentmessage: contmessage,replayMessage: collectedd.first().content};saveReplay();
+var embed1 = new Discord.RichEmbed()
+.setTitle(`Done`)
+.setThumbnail(message.author.avatarURL)
+.setColor("GRAY")
+.setDescription(`${contmessage} | ${collectedd.first().content}`)
+.setFooter(client.user.username, client.user.avatarURL);
+msg.edit("**Done**");
+message.channel.send(embed1);
+})})})}})
+client.on("message", message => {
+let messagecontent = replyMSG[message.author.id].contentmessage;
+let reply = replyMSG[message.author.id].replayMessage;
+if (message.content == messagecontent) {
+if (messagecontent == "none" || reply == "none") return undefined;
+message.channel.send(reply)}});
